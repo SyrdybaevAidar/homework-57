@@ -1,8 +1,8 @@
-import React  from "react";
+import React, { FormEvent }  from "react";
 import { useState } from 'react';
 import {Role} from "./Role";
 
-export class userModel{
+export class UserModel{
     Name: string;
     Email: string;
     RoleId: number;
@@ -14,49 +14,51 @@ export class userModel{
         this.IsActive = isActive;
     };
 
-    setName(name: string): userModel{
+    setName(name: string): UserModel{
         this.Name = name;
         return this;
     }
 
-    setEmail(email: string): userModel{
+    setEmail(email: string): UserModel{
         this.Email = email;
         return this;
     }
 
-    setRoleId(roleId: number): userModel{
+    setRoleId(roleId: number): UserModel{
         this.RoleId = roleId;
         return this;
     }
 
-    setIsActive(isActive: boolean): userModel{
+    setIsActive(isActive: boolean): UserModel{
         this.IsActive = isActive;
         return this;
     }
 };
 
 interface CreateProps extends React.PropsWithChildren{
-    CreateHandler: (user: userModel) => void;
+    CreateHandler: (user: UserModel) => void;
 }
 
 export const Create = (props: CreateProps) => {
-    const [createdUser, setCreatedUser] = useState(new userModel("", "", 0, false));
+    const [createdUser, setCreatedUser] = useState(new UserModel("", "", 0, false));
     const roleComponents = Role.Roles.map(it => 
         (
             <option value={it.Id}>{it.Name}</option>
         )
     );
 
-    const addUser = () => {
-        
+    const addUser = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        props.CreateHandler(createdUser);
+        setCreatedUser(new UserModel("", "", 0, false));
     };
 
     return (
-        <form method="post">
-            <input id="name" type="text" onChange={e => setCreatedUser(createdUser.setName(e.currentTarget.value))}/>
-            <input id="email" type="text" onChange={e => setCreatedUser(createdUser.setEmail(e.currentTarget.value))}/>
-            <input id="isActive" type="checkbox" onChange={e => setCreatedUser(createdUser.setIsActive(e.currentTarget.checked))}/>
-            <select id="roleId" onChange={e => setCreatedUser(createdUser.setRoleId(parseInt(e.currentTarget.value)))}>
+        <form method="post" onSubmit={e => addUser(e)}>
+            <input type="text" onChange={e => setCreatedUser(createdUser.setName(e.currentTarget.value))}/>
+            <input type="text" onChange={e => setCreatedUser(createdUser.setEmail(e.currentTarget.value))}/>
+            <input type="checkbox" onChange={e => setCreatedUser(createdUser.setIsActive(e.currentTarget.checked))}/>
+            <select onChange={e => setCreatedUser(createdUser.setRoleId(parseInt(e.currentTarget.value)))}>
                 {roleComponents}
             </select>
             <button type="submit"></button>
